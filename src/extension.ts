@@ -1,23 +1,23 @@
 import * as vscode from "vscode";
 import { BookmarkTreeProvider } from "./provider/BookmarkTreeProvider";
 
-export function activate(context: vscode.ExtensionContext) {
+function activate(context: vscode.ExtensionContext) {
   const bookmarkTree = new BookmarkTreeProvider(context);
 
   context.subscriptions.push(
     ...[
       vscode.window.registerTreeDataProvider("qmark", bookmarkTree),
-      vscode.commands.registerCommand("qmark.refreshEntry", () => {
-        bookmarkTree.refresh();
-      }),
-      vscode.commands.registerCommand("qmark.addItem", (args: vscode.Uri) => {
-        bookmarkTree.bookmarkList = vscode.Uri.parse(args.path);
+      vscode.commands.registerCommand("qmark.addItem", (args) => {
+        bookmarkTree.addItem(vscode.Uri.parse(args.path));
       }),
       vscode.commands.registerCommand("qmark.removeItem", (args) => {
-        bookmarkTree.removeItem(args.resourceUri);
+        bookmarkTree.deleteItem(args.resourceUri.path);
       }),
       vscode.commands.registerCommand("qmark.removeAllItems", () => {
-        bookmarkTree.removeAllItems();
+        bookmarkTree.deleteAll();
+      }),
+      vscode.commands.registerCommand("qmark.refreshEntry", () => { 
+        bookmarkTree.refresh();
       }),
 
       vscode.commands.registerCommand("qmark.openFile", (file) => {
@@ -29,3 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
     ]
   );
 }
+
+function deactivate() { }
+
+export {activate, deactivate}
